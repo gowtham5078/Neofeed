@@ -1,0 +1,107 @@
+.one {
+    background-image: url('../../assets/images/theme3.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-color: #f0f4f7; /* Fallback color */
+    margin: 0;
+    padding: 20px;
+    font-family: 'Segoe UI', sans-serif;
+}
+.prediction-panel {
+  max-width: 700px;
+  margin: 20px auto;
+  padding: 15px;
+  background-color: rgba(88, 100, 223, 0.9);
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  font-family: 'Segoe UI', sans-serif;
+
+  background-image: url('../../assets/images/theme3.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-blend-mode: overlay;
+}
+
+.prediction-panel h3 {
+  text-align: center;
+  color: #0d47a1;
+  font-size: 1.5em;
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+.prediction-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.prediction-table th,
+.prediction-table td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.prediction-table th {
+  background-color: #e0f7fa;
+  color: #006064;
+  font-weight: bold;
+  font-size: 0.95em;
+}
+
+.prediction-table td {
+  background: white;
+  color: #000000;
+  font-weight:500;
+  font-size: 1.2em;
+}
+
+.video-toggle-button {
+  background-color: #e53935;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1em;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.video-toggle-button:hover {
+  background-color: #c62828;
+}
+
+
+.section-header th {
+  background: linear-gradient(90deg, #b2ebf2, #80deea);
+  color: #004d40;
+  font-size: 1em;
+  padding: 12px;
+  font-weight: bold;
+}
+
+.suction-metrics-header th,
+.cardiopulmonary-header th {
+  background: linear-gradient(90deg, #ef9a9a, #e53935);
+  color: white;
+  font-size: 1em;
+  padding: 12px;
+  font-weight: bold;
+}
+
+.alerts-list {
+  list-style-type: disc;
+  padding-left: 20px;
+  color: red;
+  font-size: 0.93em;
+}
+
+.prediction-table tr:hover {
+  background-color: rgba(244, 67, 54, 0.05);
+}

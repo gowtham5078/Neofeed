@@ -1,0 +1,105 @@
+.sensor-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+  background: linear-gradient(to right, #e0f7fa, #f1f8e9);
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.sensor-container h2 {
+  text-align: center;
+  color: #00796b;
+}
+
+.timestamp {
+  text-align: center;
+  font-size: 1.1em;
+  margin-bottom: 20px;
+  color: #555;
+}
+
+.sensor-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+.sensor-row {
+  background: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sensor-label {
+  font-weight: bold;
+  color: #333;
+}
+
+.sensor-value {
+  color: #00796b;
+  font-size: 1.1em;
+}
+
+.error {
+  text-align: center;
+  color: red;
+  font-weight: bold;
+}
+.table-container {
+  margin: 40px auto;
+  max-width: 90%;
+  overflow-x: auto;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+th, td {
+  padding: 10px;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+}
+
+th {
+  background: #e0f2f1;
+  font-weight: bold;
+}
+
+.alert-row {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.chart-container {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #f9fbe7;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+select {
+  margin-bottom: 20px;
+  padding: 8px;
+  font-size: 1em;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

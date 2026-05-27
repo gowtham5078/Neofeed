@@ -1,0 +1,120 @@
+/* Container for the whole dashboard */
+.hospital-dashboard-container {
+  max-width: 1400px;
+  margin: 20px auto;
+  padding: 15px;
+  font-family: 'Segoe UI', sans-serif;
+  background: rgba(141, 156, 178, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Dashboard Title */
+.dashboard-title {
+  text-align: center;
+  font-size: 2rem;
+  color: #0d47a1;
+  margin-bottom: 25px;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Layout Grid */
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 10px;
+}
+
+/* Main content area */
+.main-content {
+  background: rgb(248, 248, 248);
+  padding: 1px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  overflow-x: auto;
+}
+
+/* Sidebar area */
+.sidebar {
+  background: rgb(231, 180, 180);
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Sidebar headings */
+.sidebar h2 {
+  font-size: 1.2rem;
+  color: #0d47a1;
+  border-bottom: 2px solid #0d47a1;
+  padding-bottom: 5px;
+}
+
+/* Cards for sidebar widgets */
+.sidebar > div {
+  background: #f5f7fa;
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Infant Grid styling */
+.infant-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 15px;
+}
+
+/* Infant card */
+.infant-card {
+  background: #ffffff;
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.infant-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+}
+
+.infant-card h3 {
+  font-size: 1.1rem;
+  color: #0d47a1;
+  margin-bottom: 8px;
+}
+
+.infant-card p {
+  font-size: 0.9rem;
+  color: #333;
+  margin: 4px 0;
+}
+
+/* Alerts styling */
+.alerts-list {
+  list-style-type: disc;
+  padding-left: 20px;
+  color: red;
+}
+
+/* Subscription Tracker styling */
+.subscription-tracker {
+  background: linear-gradient(135deg, #80d8ff, #40c4ff);
+  color: rgb(26, 24, 24);
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1000px) {
+  .dashboard-layout {
+    grid-template-columns: 1fr;
+  }
+}

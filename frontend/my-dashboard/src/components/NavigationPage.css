@@ -1,0 +1,55 @@
+.navigation-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* Changed so logo & title are at top */
+  height: 100vh;
+  padding-top: 20px;
+  background: linear-gradient(135deg, #e0f7fa, #80deea);
+  font-family: 'Segoe UI', sans-serif;
+  background-image: url('../assets/images/theme4.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.nav-header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 10px 20px;
+}
+
+.nav-logo {
+  height: 280px; /* Adjust size as needed */
+  margin-right: 60px;
+  margin-left:60px;
+  border-radius: 50%;
+}
+
+.navigation-page h1 {
+  font-size: 2em;
+  color: #ffffff;
+  margin-bottom: 40px;
+}
+
+.nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.nav-button {
+  text-decoration: none;
+  padding: 15px 25px;
+  background: linear-gradient(90deg, #ef9a9a, #e53935);
+  color: white;
+  font-size: 1.2em;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+
+.nav-button:hover {
+  background: linear-gradient(90deg, #e57373, #d32f2f);
+}
