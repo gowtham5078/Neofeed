@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
+import Header from '../Header';
 import InfantGrid from './InfantGrid';
 import AlertMonitor from './AlertMonitor';
+import TrendViewer from './TrendViewer';
+import SubscriptionTracker from './SubscriptionTracker';
 import './HospitalDashboard.css';
 
 // Simulated infant data (shared across dashboard components)
@@ -18,17 +21,73 @@ const infantsData = [
 ];
 
 const HospitalDashboard = () => {
+  const [selectedInfantId, setSelectedInfantId] = useState(1);
+
+  // Dynamic KPI Calculations
+  const totalMonitored = infantsData.length;
+  const criticalAlerts = infantsData.filter(
+    (infant) => infant.spo2 < 92 || infant.heartRate < 100 || infant.sucksPerMin < 50
+  ).length;
+  const stableCount = totalMonitored - criticalAlerts;
+
+  const handleInfantSelect = (id) => {
+    setSelectedInfantId(id);
+  };
+
   return (
     <div className="hospital-dashboard-container">
-      <h1 className="dashboard-title">Hospital Dashboard</h1>
-      <div className="dashboard-layout">
-        <div className="main-content">
-          <InfantGrid infantsData={infantsData} />
+      <Header />
+      
+      <main className="dashboard-content-layout">
+        
+        {/* Dynamic Clinical KPI Row */}
+        <section className="clinical-kpi-bar">
+          <div className="kpi-panel cyan">
+            <div className="kpi-icon">🍼</div>
+            <div className="kpi-data">
+              <span className="kpi-label">TOTAL MONITORED</span>
+              <span className="kpi-value">{totalMonitored}</span>
+            </div>
+            <div className="kpi-spark cyan"></div>
+          </div>
+          
+          <div className="kpi-panel rose">
+            <div className="kpi-icon">🚨</div>
+            <div className="kpi-data">
+              <span className="kpi-label">ACTIVE ALERTS</span>
+              <span className="kpi-value pulse-number">{criticalAlerts}</span>
+            </div>
+            <div className="kpi-spark rose"></div>
+          </div>
+          
+          <div className="kpi-panel emerald">
+            <div className="kpi-icon">💖</div>
+            <div className="kpi-data">
+              <span className="kpi-label">STABLE STATUS</span>
+              <span className="kpi-value">{stableCount}</span>
+            </div>
+            <div className="kpi-spark emerald"></div>
+          </div>
+        </section>
+
+        {/* Multi-Column Layout */}
+        <div className="dashboard-grid-layout">
+          <div className="main-registry-area">
+            <InfantGrid 
+              infantsData={infantsData} 
+              selectedId={selectedInfantId}
+              onSelect={handleInfantSelect}
+            />
+          </div>
+          
+          <aside className="ward-sidebar-area">
+            <AlertMonitor infantsData={infantsData} />
+            <TrendViewer infantId={selectedInfantId} />
+            <SubscriptionTracker />
+          </aside>
         </div>
-        <div className="sidebar">
-          <AlertMonitor infantsData={infantsData} />
-        </div>
-      </div>
+
+      </main>
     </div>
   );
 };

@@ -3,12 +3,10 @@ import axios from 'axios';
 import './SensorView.css';
 
 function SensorView() {
-    const [index, setIndex] = useState(0);
+    const [, setIndex] = useState(0);
     const [data, setData] = useState({});
     const [timestamp, setTimestamp] = useState('00:00');
     const [error, setError] = useState('');
-
-    // Use a ref to hold the index state so the interval doesn't rely on it
     const indexRef = useRef(0); 
 
     const formatTimestamp = (seconds) => {
@@ -17,75 +15,83 @@ function SensorView() {
         return `${mins}:${secs}`;
     };
 
-    // ----------------------------------------------------------------------
-    // Main Streaming Logic: Fetches data for the current index and handles end-of-file
-    // ----------------------------------------------------------------------
     const fetchRow = async (currentIndex) => {
         try {
-            // Attempt to fetch the next row
             const res = await axios.get(`http://127.0.0.1:5000/api/stream/${currentIndex}`);
-            
-            // Success: Update state and advance ref
             setData(res.data);
             setTimestamp(formatTimestamp(currentIndex * 5)); // 5s interval simulation
             setError('');
             indexRef.current = currentIndex;
-
         } catch (err) {
-            // Error (likely a 404 because the index is out of range)
             if (err.response && err.response.status === 404) {
-                // Keep the last known data and show a 'waiting' status
-                setError('Stream paused. Awaiting new data in the file...');
+                setError('Awaiting telemetry signal refresh...');
             } else {
-                // Display a true error (e.g., server down)
-                setError('Error fetching data. Check server connection.');
+                setError('Loss of telemetry feed. Retrying connection...');
             }
         }
     };
 
-    // ----------------------------------------------------------------------
-    // Interval Management: Runs every 5s to trigger the next fetch
-    // ----------------------------------------------------------------------
     useEffect(() => {
-        // Run the fetch immediately to get the first row (index 0)
         fetchRow(indexRef.current);
 
-        // Set the interval to fetch the next index every 5 seconds
         const interval = setInterval(() => {
             const nextIndex = indexRef.current + 1;
-            
-            // Trigger the fetch. The success/failure logic handles the state and indexRef update.
             fetchRow(nextIndex);
-            
-            // Crucial: Update the component's visible index state to force a re-render 
-            // after the fetch logic has completed.
             setIndex(nextIndex); 
-            
-        }, 5000); // 5000 ms = 5 seconds
+        }, 5000);
 
-        // Cleanup: Clear the interval when the component unmounts
         return () => clearInterval(interval);
-        
-    }, []); // Empty dependency array: runs only once on mount
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    // Icon & Unit mapping for high-end telemetry presentation
+    const metricMeta = {
+        'Heart Rate (bpm)': { label: 'Heart Rate', icon: '❤️', unit: 'bpm', color: 'cyan' },
+        'SpO2 (%)': { label: 'SpO₂ Level', icon: '🫁', unit: '%', color: 'teal' },
+        'Suction Pressure (mmHg)': { label: 'Suction Force', icon: '🌀', unit: 'mmHg', color: 'violet' },
+        'Latch/Tongue Motion (0_1)': { label: 'Latch Motion', icon: '👅', unit: 'val', color: 'amber' },
+        'Lip Compression Force (g)': { label: 'Compression', icon: '👄', unit: 'g', color: 'rose' }
+    };
 
     return (
         <div className="sensor-container">
-            <h2>🩺 NeoFEED Live Sensor Stream</h2>
+            <div className="sensor-header-row">
+                <h2 className="telemetry-box-title">⚡ Live Clinical Telemetry</h2>
+                <div className="active-stream-badge">
+                    <span className="pulse-indicator"></span>
+                    <span>STREAMING</span>
+                </div>
+            </div>
+            
             <p className="timestamp">
-                ⏱️ Timestamp: {timestamp} (Row {indexRef.current + 1})
+                ⏱️ Elapsed: <span className="time-highlight">{timestamp}</span> | Cycle Sequence: <span className="cycle-highlight">{indexRef.current + 1}</span>
             </p>
+
             {error ? (
-                <p className="error">{error}</p>
+                <div className="sensor-stream-error">
+                    <span className="warning-icon">⚠️</span>
+                    <span className="error-text">{error}</span>
+                </div>
             ) : (
-                <div className="sensor-card">
+                <div className="sensor-grid-deck">
                     {Object.entries(data)
-                        .filter(([key]) => key !== "POFRAS Score (0_36)") // Exclude POFRAS
-                        .map(([key, value]) => (
-                            <div key={key} className="sensor-row">
-                                <span className="sensor-label">{key}</span>
-                                <span className="sensor-value">{value}</span>
-                            </div>
-                        ))}
+                        .filter(([key]) => key !== "POFRAS Score (0_36)")
+                        .map(([key, value]) => {
+                            const meta = metricMeta[key] || { label: key, icon: '📈', unit: '', color: 'cyan' };
+                            return (
+                                <div key={key} className={`sensor-grid-card ${meta.color}`}>
+                                    <div className="card-top">
+                                        <span className="meta-icon">{meta.icon}</span>
+                                        <span className="meta-label">{meta.label}</span>
+                                    </div>
+                                    <div className="card-bottom">
+                                        <span className="meta-value">{value}</span>
+                                        <span className="meta-unit">{meta.unit}</span>
+                                    </div>
+                                    <div className="card-spark-line"></div>
+                                </div>
+                            );
+                        })}
                 </div>
             )}
         </div>

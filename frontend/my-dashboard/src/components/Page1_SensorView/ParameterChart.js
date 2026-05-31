@@ -1,33 +1,47 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Line } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+} from 'chart.js';
 import './SensorView.css';
+
+// Safely register chart components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+);
 
 function ParameterChart() {
     const [data, setData] = useState([]);
     const [selected, setSelected] = useState('');
-    const [index, setIndex] = useState(0); // This controls how many points are visible
+    const [index, setIndex] = useState(0); 
     const [lastDataLength, setLastDataLength] = useState(0);
 
-    // --------------------------------------------------------
-    // 1. Data Fetching (Runs periodically to get latest file)
-    // --------------------------------------------------------
     useEffect(() => {
         const fetchAll = async () => {
             try {
                 const res = await axios.get('http://127.0.0.1:5000/api/data/101');
                 const newData = res.data;
 
-                // Check if the file has been updated with new rows
                 if (newData.length > lastDataLength) {
-                    // *** FIX 1: Update the full dataset ***
                     setData(newData);
                     setLastDataLength(newData.length);
                     
-                    // The index is NOT reset here. The streaming effect (useEffect 2) 
-                    // will automatically continue up to the new data length.
-
-                    // Set default selected parameter only on initial load
                     if (!selected && newData.length > 0) {
                         const firstKey = Object.keys(newData[0]).find(key => key !== "POFRAS Score (0_36)");
                         setSelected(firstKey || "");
@@ -38,35 +52,38 @@ function ParameterChart() {
             }
         };
 
-        // Fetch immediately and set up a periodic check (e.g., every 15 seconds)
         fetchAll();
-        const fetchInterval = setInterval(fetchAll, 15000); // Check for file updates every 15s
+        const fetchInterval = setInterval(fetchAll, 15000); 
 
         return () => clearInterval(fetchInterval);
     }, [selected, lastDataLength]); 
 
-    // --------------------------------------------------------
-    // 2. Data Plotting (Runs every 5 seconds to simulate streaming)
-    // --------------------------------------------------------
     useEffect(() => {
-        // Only start the interval if there is data
         if (data.length > 0) {
             const streamInterval = setInterval(() => {
-                // *** FIX 2: Check for end-of-data condition ***
                 setIndex((i) => {
                     if (i < data.length) {
-                        // Advance to the next point
                         return i + 1;
                     } else {
-                        // Reached the end of the currently fetched data. Stop advancing.
                         return i; 
                     }
                 });
-            }, 5000); // Advance one point every 5 seconds
+            }, 5000); 
 
             return () => clearInterval(streamInterval);
         }
-    }, [data]); // Re-run whenever a new dataset is fetched
+    }, [data]); 
+
+    // Neon accent colors based on selected parameter
+    const getNeonColor = (param) => {
+        if (param.includes('Heart')) return '#06b6d4'; // Cyan
+        if (param.includes('SpO2')) return '#10b981';  // Teal
+        if (param.includes('Suction')) return '#8b5cf6'; // Violet
+        if (param.includes('Latch')) return '#f59e0b';   // Amber
+        return '#f43f5e'; // Rose for lip pressure/other
+    };
+
+    const neonColor = getNeonColor(selected);
 
     const chartData = {
         labels: data.slice(0, index).map((_, i) => `T${i + 1}`),
@@ -74,32 +91,81 @@ function ParameterChart() {
             {
                 label: selected,
                 data: data.slice(0, index).map((d) => d[selected]),
-                borderColor: '#00796b',
-                backgroundColor: 'rgba(0,121,107,0.2)',
+                borderColor: neonColor,
+                backgroundColor: `${neonColor}18`, // Subtle alpha transparency
                 fill: true,
                 tension: 0.3,
+                borderWidth: 2.5,
+                pointRadius: 4,
+                pointBackgroundColor: neonColor,
+                pointBorderColor: '#ffffff',
+                pointHoverRadius: 6,
             },
         ],
+    };
+
+    const chartOptions = {
+        responsive: true,
+        scales: {
+            x: {
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.05)',
+                },
+                ticks: {
+                    color: '#94a3b8',
+                    font: {
+                        family: "'Inter', sans-serif",
+                        size: 10
+                    }
+                }
+            },
+            y: {
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.05)',
+                },
+                ticks: {
+                    color: '#94a3b8',
+                    font: {
+                        family: "'Inter', sans-serif",
+                        size: 10
+                    }
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                labels: {
+                    color: '#ffffff',
+                    font: {
+                        family: "'Plus Jakarta Sans', sans-serif",
+                        weight: '700'
+                    }
+                }
+            }
+        }
     };
 
     const hasReachedEnd = index >= data.length && data.length > 0;
 
     return (
         <div className="chart-container">
-            <h2>📈 Parameter Trend (Live)</h2>
-            <select value={selected} onChange={(e) => setSelected(e.target.value)}>
+            <h2>📈 Parameter Trend Matrix</h2>
+            <select 
+                className="telemetry-chart-select"
+                value={selected} 
+                onChange={(e) => setSelected(e.target.value)}
+            >
                 {data[0] && Object.keys(data[0])
-                    .filter(key => key !== "POFRAS Score (0_36)") // Exclude POFRAS
+                    .filter(key => key !== "POFRAS Score (0_36)") 
                     .map((key) => (
                         <option key={key} value={key}>{key}</option>
                     ))}
             </select>
-            <Line data={chartData} />
+            <Line data={chartData} options={chartOptions} />
 
-            {/* Display status when streaming is complete for the current dataset */}
             {hasReachedEnd && (
                 <p className="stream-status">
-                    Streaming paused. Awaiting new data... (Last point plotted: {data.length})
+                    PULSE STABLE • Feed completed or stream awaiting next data frame...
                 </p>
             )}
         </div>

@@ -1,0 +1,134 @@
+.clinical-header {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-height);
+  background: rgba(11, 15, 25, 0.8);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--glass-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 32px;
+  z-index: 1000;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.header-logo-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-brand-link {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-symbol {
+  font-size: 1.5rem;
+  filter: drop-shadow(0 0 6px var(--accent-cyan));
+}
+
+.logo-text {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: 1px;
+  background: linear-gradient(135deg, #ffffff 30%, var(--accent-cyan) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  padding: 4px 8px;
+  border-radius: 20px;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  background-color: var(--accent-teal);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--accent-teal);
+  animation: pulseGlowTeal 2s infinite;
+}
+
+.status-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--accent-teal);
+  letter-spacing: 0.5px;
+}
+
+.header-navigation {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid var(--glass-border);
+  padding: 4px;
+  border-radius: 30px;
+}
+
+.nav-item {
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding: 8px 16px;
+  border-radius: 20px;
+  transition: all 0.2s ease-in-out;
+}
+
+.nav-item:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.nav-item.active {
+  color: #ffffff;
+  background: rgba(6, 182, 212, 0.15);
+  border: 1px solid rgba(6, 182, 212, 0.25);
+  box-shadow: 0 0 12px rgba(6, 182, 212, 0.1);
+  text-shadow: 0 0 8px rgba(6, 182, 212, 0.5);
+}
+
+.header-context {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+}
+
+.context-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+.context-value {
+  font-family: monospace;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: var(--accent-cyan);
+  text-shadow: 0 0 6px rgba(6, 182, 212, 0.3);
+}
+
+@media (max-width: 768px) {
+  .clinical-header {
+    padding: 0 16px;
+  }
+  .header-navigation {
+    display: none; /* Hide nav items on small mobile; desktop clinical monitors are standard */
+  }
+}

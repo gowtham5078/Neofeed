@@ -1,25 +1,23 @@
 import React from 'react';
+import Header from '../Header';
 import SensorView from './SensorView';
 import SensorTable from './SensorTable';
 import ParameterChart from './ParameterChart';
 import './Page1.css';
-import backgroundImg from '../../assets/images/theme3.png'; // import image
 
 function Page1() {
   return (
-    <div
-      className="page1-container"
-      style={{
-        backgroundImage: `url(${backgroundImg})`,
-        minHeight: "100vh",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundAttachment: "fixed",
-      }}
-    >
-      <SensorView />
-      <ParameterChart />
-      <SensorTable />
+    <div className="page1-container">
+      <Header />
+      <main className="page1-content-layout">
+        <div className="telemetry-top-row">
+          <SensorView />
+          <ParameterChart />
+        </div>
+        <div className="telemetry-bottom-row">
+          <SensorTable />
+        </div>
+      </main>
     </div>
   );
 }

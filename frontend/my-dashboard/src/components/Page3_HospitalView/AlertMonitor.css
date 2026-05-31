@@ -1,28 +1,127 @@
-.alert-monitor {
-  background-color: #fff;
-  border: 1px solid #ffcc00;
-  border-left: 5px solid #ffcc00;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 15px;
+/* Ward Active Alerts Widget - AlertMonitor.css */
+
+.alert-monitor-panel {
+  background: rgba(244, 63, 94, 0.03);
+  border: 1px solid rgba(244, 63, 94, 0.15);
+  border-left: 4px solid var(--accent-rose);
+  border-radius: var(--border-radius-md);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.alert-monitor h3 {
-  color: #cc9900;
-  border-bottom: 2px solid #ffcc00;
+.alert-monitor-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid rgba(244, 63, 94, 0.15);
   padding-bottom: 10px;
-  margin-bottom: 10px;
 }
 
-.alert-monitor ul {
-  list-style-type: none;
+.alarm-symbol {
+  font-size: 1.25rem;
+  filter: drop-shadow(0 0 4px var(--accent-rose));
+}
+
+.alert-monitor-header h3 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--accent-rose);
+  letter-spacing: 0.5px;
+}
+
+.alarm-log-deck {
+  list-style: none;
   padding: 0;
-  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.alert-monitor li {
-  background-color: #fff8e1;
-  padding: 10px;
-  margin-bottom: 5px;
+.alarm-log-card {
+  background: rgba(8, 12, 20, 0.3);
+  border: 1px solid rgba(244, 63, 94, 0.1);
+  border-radius: var(--border-radius-sm);
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: fadeIn 0.4s ease;
+}
+
+.alarm-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.alarm-patient-name {
+  font-weight: 700;
+  color: #ffffff;
+  font-size: 0.85rem;
+}
+
+.alarm-badge-pulse {
+  background: rgba(244, 63, 94, 0.12);
+  border: 1px solid rgba(244, 63, 94, 0.25);
+  color: var(--accent-rose);
+  font-size: 0.6rem;
+  font-weight: 800;
+  padding: 2px 6px;
   border-radius: 4px;
+  letter-spacing: 0.5px;
+  animation: pulseGlowRed 2s infinite;
+}
+
+.alarm-card-details {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.alarm-metric-warn {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.alarm-metric-warn strong {
+  color: #ffffff;
+}
+
+.alarm-metric-warn strong.text-red {
+  color: var(--accent-rose);
+}
+
+.alarm-log-stable-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 10px;
+  text-align: center;
+  color: var(--text-secondary);
+  gap: 10px;
+}
+
+.stable-symbol {
+  width: 28px;
+  height: 28px;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: var(--accent-teal);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.2);
+}
+
+.alarm-log-stable-prompt p {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
 }

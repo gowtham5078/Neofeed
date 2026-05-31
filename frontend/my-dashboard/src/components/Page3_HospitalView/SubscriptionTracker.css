@@ -1,17 +1,82 @@
-.subscription-tracker {
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 15px;
+/* Premium License Key Widget - SubscriptionTracker.css */
+
+.subscription-card-badge {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(217, 119, 6, 0.02) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.15);
+  border-radius: var(--border-radius-md);
+  padding: 16px 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--glass-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.subscription-tracker h3 {
-  color: #004d40;
-  border-bottom: 2px solid #e0e0e0;
-  padding-bottom: 10px;
-  margin-bottom: 10px;
+.card-badge-glow {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 60px;
+  height: 60px;
+  background: var(--accent-amber);
+  filter: blur(24px);
+  opacity: 0.15;
+  pointer-events: none;
 }
 
-.subscription-tracker p {
-  margin: 5px 0;
+.badge-header-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.badge-chip {
+  font-size: 1.1rem;
+  filter: drop-shadow(0 0 4px var(--accent-amber));
+}
+
+.badge-status-glow {
+  font-family: monospace;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--accent-amber);
+  letter-spacing: 0.5px;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  padding: 2px 6px;
+  border-radius: 4px;
+  animation: pulseGlow 3s infinite;
+}
+
+.badge-details-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.badge-plan-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+}
+
+.badge-expiration-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.badge-expiration-info span {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+
+.badge-expiration-info strong {
+  font-family: monospace;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
 }

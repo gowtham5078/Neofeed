@@ -3,17 +3,25 @@ import './SubscriptionTracker.css';
 
 const SubscriptionTracker = () => {
   const subscriptionStatus = {
-    plan: 'Premium Hospital',
-    status: 'Active',
+    plan: 'PREMIUM ICU SYSTEM',
+    status: 'AUTHENTICATED',
     expires: '2026-09-27',
   };
 
   return (
-    <div className="subscription-tracker">
-      <h3>⭐ Subscription Status</h3>
-      <p><strong>Plan:</strong> {subscriptionStatus.plan}</p>
-      <p><strong>Status:</strong> {subscriptionStatus.status}</p>
-      <p><strong>Expires:</strong> {subscriptionStatus.expires}</p>
+    <div className="subscription-card-badge">
+      <div className="card-badge-glow"></div>
+      <div className="badge-header-line">
+        <span className="badge-chip">🔑</span>
+        <span className="badge-status-glow">{subscriptionStatus.status}</span>
+      </div>
+      <div className="badge-details-block">
+        <div className="badge-plan-title">{subscriptionStatus.plan}</div>
+        <div className="badge-expiration-info">
+          <span>PIPELINE VALID THROUGH:</span>
+          <strong>{subscriptionStatus.expires}</strong>
+        </div>
+      </div>
     </div>
   );
 };
