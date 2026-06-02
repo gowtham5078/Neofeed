@@ -1,14 +1,25 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { clearAuth } from '../api';
 import './NavigationPage.css';
-import logo from '../assets/images/neonat2.png'; // ← Path to your logo image
+import logo from '../assets/images/neonat2.png';
 
 const NavigationPage = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    clearAuth();
+    navigate('/');
+  };
+
   return (
     <div className="navigation-page">
       <div className="nav-header">
         <img src={logo} alt="NeoFEED Logo" className="nav-logo" />
-        <h1>🩺 NeoFEED — Next‑Gen Neonatal Feeding & Health Monitoring System</h1>
+        <h1>NeoFEED — Next-Gen Neonatal Feeding & Health Monitoring System</h1>
+        <button onClick={handleLogout} className="logout-button">
+          Logout
+        </button>
       </div>
 
       <div className="nav-links">

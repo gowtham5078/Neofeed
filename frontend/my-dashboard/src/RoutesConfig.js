@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import SensorView from './components/Page1_SensorView/SensorView';
@@ -8,29 +8,53 @@ import ModelEngine from './components/Page2_ModelEngine/ModelEngine';
 import HospitalDashboard from './components/Page3_HospitalView/HospitalDashboard';
 import NavigationPage from './components/NavigationPage';
 
+// --------------------------------------------------
+// ProtectedRoute — redirects to / if no token found
+// --------------------------------------------------
+function ProtectedRoute({ children }) {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    return <Navigate to="/" replace />;
+  }
+  return children;
+}
+
 function RoutesConfig() {
   return (
     <Router>
       <Routes>
-        {/* Home/Login */}
-        <Route path="/" element={<NavigationPage />} /> {/* Combined Nav Page */}
 
+        {/* Public — login only */}
         <Route path="/" element={<Login />} />
 
-        {/* Dashboard after login */}
-        <Route path="/dashboard/:neonateId" element={<Dashboard />} />
+        {/* Protected — must be logged in */}
+        <Route path="/home" element={
+          <ProtectedRoute><NavigationPage /></ProtectedRoute>
+        } />
 
-        {/* Page 1: Sensor Data */}
-        <Route path="/sensor-data/:neonateId" element={<Page1 />} />
+        <Route path="/dashboard/:neonateId" element={
+          <ProtectedRoute><Dashboard /></ProtectedRoute>
+        } />
 
-        {/* Page 1: Sensor Graph */}
-        <Route path="/sensor-graph/:neonateId" element={<SensorView />} />
+        <Route path="/sensor-data/:neonateId" element={
+          <ProtectedRoute><Page1 /></ProtectedRoute>
+        } />
 
-        {/* Page 2: ML Model Engine */}
-        <Route path="/ml-engine/:neonateId" element={<ModelEngine />} />
+        <Route path="/sensor-graph/:neonateId" element={
+          <ProtectedRoute><SensorView /></ProtectedRoute>
+        } />
 
-        {/* Page 3: Hospital Dashboard */}
-        <Route path="/hospital-dashboard" element={<HospitalDashboard />} />
+        <Route path="/ml-engine/:neonateId" element={
+          <ProtectedRoute><ModelEngine /></ProtectedRoute>
+        } />
+
+        <Route path="/hospital-dashboard" element={
+          <ProtectedRoute><HospitalDashboard /></ProtectedRoute>
+        } />
+
+        {/* Catch-all — redirect unknown paths to login */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+
       </Routes>
     </Router>
   );

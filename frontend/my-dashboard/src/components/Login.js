@@ -3,40 +3,68 @@ import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../api';
 
 function Login() {
-  const [userId, setUserId] = useState('');
+  const [userId,   setUserId]   = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [error,    setError]    = useState('');
+  const [loading,  setLoading]  = useState(false);
+
   const navigate = useNavigate();
 
   const handleLogin = async () => {
+    setError('');
+    setLoading(true);
+
     try {
-      const res = await loginUser(userId, password);
-      if (res.data.success) {
-        navigate(`/dashboard/${res.data.neonateId}`);
+      const data = await loginUser(userId, password);
+
+      if (data.success) {
+        // All users land on NavigationPage first
+        navigate('/home');
       } else {
-        setError(res.data.message);
+        setError(data.message || 'Login failed.');
       }
+
     } catch (err) {
-      setError('Login failed. Please try again.');
+      if (err.response?.data?.message) {
+        setError(err.response.data.message);
+      } else {
+        setError('Login failed. Please try again.');
+      }
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') handleLogin();
   };
 
   return (
     <div className="login-container">
       <h2>NeoFEED Login</h2>
+
       <input
         type="text"
-        placeholder="Neonate ID"
+        placeholder="Username / Neonate ID"
         value={userId}
         onChange={(e) => setUserId(e.target.value)}
+        onKeyDown={handleKeyDown}
+        disabled={loading}
       />
+
       <input
         type="password"
         placeholder="Password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
+        onKeyDown={handleKeyDown}
+        disabled={loading}
       />
-      <button onClick={handleLogin}>Login</button>
+
+      <button onClick={handleLogin} disabled={loading}>
+        {loading ? 'Logging in...' : 'Login'}
+      </button>
+
       {error && <p className="error">{error}</p>}
     </div>
   );

@@ -87,8 +87,8 @@ def calculate_derived_averages(df_block):
     sucks_per_min_list = []
     inter_suck_interval_list = []
     max_suck_pressure_list = []
+    max_pressure = abs(df_block["Suction Pressure (mmHg)"]).max()
 
-    max_pressure = df_block["Suction Pressure (mmHg)"].max()
     max_suck_pressure_list.append(max_pressure)
 
     suck_count = len(df_block[df_block["Suction Pressure (mmHg)"] > SUCK_THRESHOLD])
@@ -169,7 +169,7 @@ def evaluate_cardiopulmonary_stability(avg_hr, avg_spo2, metrics):
         unstable_params.append("Inter-suck Interval")
 
     # Max suck pressure check
-    if metrics["avg_max_suck_pressure"] < 50:
+    if abs(metrics["avg_max_suck_pressure"]) < 50:
         alerts.append("Weak suction pressure (max < 50 mmHg)")
         unstable_params.append("Suction Pressure (mmHg)")
 
