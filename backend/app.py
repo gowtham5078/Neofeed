@@ -2,14 +2,23 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from config import Config
 from database import db
+
 from flask_jwt_extended import (
     JWTManager,
     jwt_required,
     get_jwt_identity
 )
-from models import User
+
+from models import (
+    User,
+    InfantVitals,
+    Prediction,
+    Alert
+)
+
 from auth import auth_bp
 from flask_socketio import SocketIO
+
 import pandas as pd
 import time
 from threading import Lock
