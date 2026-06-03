@@ -52,7 +52,6 @@ app.register_blueprint(auth_bp)
 socketio = SocketIO(
     app,
     cors_allowed_origins="*",
-    async_mode="threading"
 )
 
 @socketio.on("connect")
@@ -255,14 +254,12 @@ def home():
 # ---------------------------
 # CREATE TABLES + START
 # ---------------------------
+with app.app_context():
+    db.create_all()
+
 if __name__ == "__main__":
-
-    with app.app_context():
-        db.create_all()
-        print("✅ Database tables created")
-
     thread = socketio.start_background_task(
         background_sensor_stream
     )
 
-    socketio.run(app, debug=True)
+    socketio.run(app, host="0.0.0.0", port=5000)
