@@ -1,5 +1,3 @@
-import os
-
 # Eventlet monkey patching must be done before any other imports
 try:
     import eventlet
@@ -8,6 +6,7 @@ try:
 except ImportError:
     print("[WARN] Eventlet not installed, skipping monkey patch.")
 
+import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from config import Config
