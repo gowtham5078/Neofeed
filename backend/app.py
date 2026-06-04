@@ -1,3 +1,13 @@
+import os
+
+# Eventlet monkey patching must be done before any other imports
+try:
+    import eventlet
+    eventlet.monkey_patch()
+    print("[OK] Eventlet monkey patching applied successfully.")
+except ImportError:
+    print("[WARN] Eventlet not installed, skipping monkey patch.")
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from config import Config
@@ -54,13 +64,19 @@ socketio = SocketIO(
     cors_allowed_origins="*",
 )
 
-@socketio.on("connect")
-def handle_connect():
-    print("✅ Frontend Connected")
-
-
 thread = None
 thread_lock = Lock()
+
+@socketio.on("connect")
+def handle_connect():
+    print("[OK] Frontend Connected")
+    global thread
+    with thread_lock:
+        if thread is None:
+            print("[INFO] Starting background sensor stream task...")
+            thread = socketio.start_background_task(
+                background_sensor_stream
+            )
 
 # ---------------------------
 # Required Columns
@@ -77,24 +93,25 @@ REQUIRED_COLUMNS = [
 # LIVE SENSOR STREAMING
 # ============================================
 def background_sensor_stream():
-
     index = 0
+    df = None
+    try:
+        print("[INFO] Loading neonate_data1.csv for sensor stream...")
+        df = pd.read_csv(
+            "neonate_data1.csv",
+            encoding="ISO-8859-1"
+        )
+        df.columns = [
+            col.replace('–', '-')
+            for col in df.columns
+        ]
+        print(f"[OK] Loaded {len(df)} rows for sensor stream.")
+    except Exception as e:
+        print("[ERROR] Error loading neonate_data1.csv for stream:", e)
 
     while True:
-
         try:
-
-            df = pd.read_csv(
-                "neonate_data1.csv",
-                encoding="ISO-8859-1"
-            )
-
-            df.columns = [
-                col.replace('–', '-')
-                for col in df.columns
-            ]
-
-            if len(df) == 0:
+            if df is None or len(df) == 0:
                 socketio.sleep(1)
                 continue
 
@@ -103,7 +120,7 @@ def background_sensor_stream():
 
             row = df.iloc[index].to_dict()
 
-            print(f"📡 Streaming row {index}")
+            print(f"[INFO] Streaming row {index}")
 
             # ============================
             # ML PREDICTION
@@ -152,7 +169,7 @@ def background_sensor_stream():
             socketio.sleep(1)
 
         except Exception as e:
-            print("❌ Stream Error:", e)
+            print("[ERROR] Stream Error:", e)
             socketio.sleep(2)
 
 
@@ -254,18 +271,17 @@ def home():
 # ---------------------------
 # CREATE TABLES + START
 # ---------------------------
-import os
-
-with app.app_context():
-    db.create_all()
+print("[INFO] Initializing database tables...")
+try:
+    with app.app_context():
+        db.create_all()
+    print("[OK] Database tables checked/created.")
+except Exception as e:
+    print(f"[WARN] Database initialization failed (possibly database is unreachable): {e}")
 
 if __name__ == "__main__":
-    thread = socketio.start_background_task(
-        background_sensor_stream
-    )
-
     port = int(os.environ.get("PORT", 5000))
-
+    print(f"[INFO] Starting development server on port {port}...")
     socketio.run(
         app,
         host="0.0.0.0",
