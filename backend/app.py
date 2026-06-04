@@ -274,6 +274,52 @@ print("[INFO] Initializing database tables...")
 try:
     with app.app_context():
         db.create_all()
+        # Seed default users if empty
+        if not User.query.first():
+            print("[INFO] Database is empty. Seeding default users...")
+            import json
+            import bcrypt
+            
+            users_file = os.path.join(os.path.dirname(__file__), "users.json")
+            if os.path.exists(users_file):
+                with open(users_file, "r") as f:
+                    users_data = json.load(f)
+                
+                for username, info in users_data.items():
+                    password = info.get("password")
+                    hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+                    
+                    user = User(
+                        username=username,
+                        password=hashed,
+                        role="parent",
+                        infant_id=username
+                    )
+                    db.session.add(user)
+                
+                # Also add a default nurse and doctor for testing convenience
+                nurse_hashed = bcrypt.hashpw("nurse123".encode(), bcrypt.gensalt()).decode()
+                nurse_user = User(
+                    username="nurse",
+                    password=nurse_hashed,
+                    role="nurse",
+                    ward="Ward A"
+                )
+                db.session.add(nurse_user)
+
+                doctor_hashed = bcrypt.hashpw("doctor123".encode(), bcrypt.gensalt()).decode()
+                doctor_user = User(
+                    username="doctor",
+                    password=doctor_hashed,
+                    role="doctor",
+                    ward="Ward A"
+                )
+                db.session.add(doctor_user)
+                
+                db.session.commit()
+                print("[OK] Default users seeded successfully.")
+            else:
+                print("[WARN] users.json not found, skipping seeding.")
     print("[OK] Database tables checked/created.")
 except Exception as e:
     print(f"[WARN] Database initialization failed (possibly database is unreachable): {e}")
