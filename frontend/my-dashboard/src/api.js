@@ -4,7 +4,7 @@ import { io } from "socket.io-client";
 // ===========================================
 // BASE URL
 // ===========================================
-const BASE_URL = "http://127.0.0.1:5000";
+const BASE_URL = "https://neofeed-backend.onrender.com";
 
 // ===========================================
 // AXIOS INSTANCE
@@ -69,10 +69,10 @@ socket.on("connect_error", (error) => {
 // TOKEN HELPERS
 // ===========================================
 export const saveAuth = (token, role, neonateId, username) => {
-  localStorage.setItem("token",     token);
-  localStorage.setItem("role",      role);
+  localStorage.setItem("token", token);
+  localStorage.setItem("role", role);
   localStorage.setItem("neonateId", neonateId || "");
-  localStorage.setItem("username",  username  || "");
+  localStorage.setItem("username", username || "");
 };
 
 export const clearAuth = () => {
@@ -82,10 +82,10 @@ export const clearAuth = () => {
   localStorage.removeItem("username");
 };
 
-export const getRole      = () => localStorage.getItem("role");
+export const getRole = () => localStorage.getItem("role");
 export const getNeonateId = () => localStorage.getItem("neonateId");
-export const getToken     = () => localStorage.getItem("token");
-export const isLoggedIn   = () => !!localStorage.getItem("token");
+export const getToken = () => localStorage.getItem("token");
+export const isLoggedIn = () => !!localStorage.getItem("token");
 
 // ===========================================
 // LOGIN API

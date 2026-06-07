@@ -14,13 +14,13 @@ THRESHOLDS = {
 }
 
 # --------------------------
-# Load & Train Model
 # --------------------------
-df_train = pd.read_csv("feeding_readiness_new_data_cleaned.csv", encoding="ISO-8859-1")
-df_train.columns = df_train.columns.str.encode('ascii', 'ignore').str.decode('ascii').str.strip()
+# Load & Train Model (Lazy Loaded)
+# --------------------------
+from threading import Lock
 
-# Make suction pressure positive
-df_train["Suction Pressure (mmHg)"] = df_train["Suction Pressure (mmHg)"] * -1
+_model_lock = Lock()
+_ols_model = None
 
 FEATURES = [
     "Heart Rate (bpm)",
@@ -30,16 +30,35 @@ FEATURES = [
     "Lip Compression Force (g)"
 ]
 
-X_train = df_train[FEATURES]
-y_train = df_train["POFRAS Score (0_36)"]
-
-X_train_sm = sm.add_constant(X_train)
-ols_model = sm.OLS(y_train, X_train_sm).fit()
+def get_ols_model():
+    global _ols_model
+    if _ols_model is None:
+        with _model_lock:
+            if _ols_model is None:
+                print("[INFO] Lazy loading training data and training OLS model...")
+                try:
+                    df_train = pd.read_csv("feeding_readiness_new_data_cleaned.csv", encoding="ISO-8859-1")
+                    df_train.columns = df_train.columns.str.encode('ascii', 'ignore').str.decode('ascii').str.strip()
+                    
+                    # Make suction pressure positive
+                    df_train["Suction Pressure (mmHg)"] = df_train["Suction Pressure (mmHg)"] * -1
+                    
+                    X_train = df_train[FEATURES]
+                    y_train = df_train["POFRAS Score (0_36)"]
+                    
+                    X_train_sm = sm.add_constant(X_train)
+                    _ols_model = sm.OLS(y_train, X_train_sm).fit()
+                    print("[OK] OLS model trained successfully.")
+                except Exception as e:
+                    print(f"[ERROR] Error training OLS model: {e}")
+                    raise e
+    return _ols_model
 
 # --------------------------
 # POFRAS Prediction Function
 # --------------------------
 def predict_readiness(data):
+    ols_model = get_ols_model()
     sample = pd.DataFrame([[
         float(data["heartRate"]),
         float(data["spo2"]),

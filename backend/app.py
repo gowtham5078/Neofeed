@@ -1,15 +1,33 @@
+# Eventlet monkey patching must be done before any other imports
+try:
+    import eventlet
+    eventlet.monkey_patch()
+    print("[OK] Eventlet monkey patching applied successfully.")
+except ImportError:
+    print("[WARN] Eventlet not installed, skipping monkey patch.")
+
+import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from config import Config
 from database import db
+
 from flask_jwt_extended import (
     JWTManager,
     jwt_required,
     get_jwt_identity
 )
-from models import User
+
+from models import (
+    User,
+    InfantVitals,
+    Prediction,
+    Alert
+)
+
 from auth import auth_bp
 from flask_socketio import SocketIO
+
 import pandas as pd
 import time
 from threading import Lock
@@ -43,16 +61,21 @@ app.register_blueprint(auth_bp)
 socketio = SocketIO(
     app,
     cors_allowed_origins="*",
-    async_mode="threading"
 )
-
-@socketio.on("connect")
-def handle_connect():
-    print("✅ Frontend Connected")
-
 
 thread = None
 thread_lock = Lock()
+
+@socketio.on("connect")
+def handle_connect():
+    print("[OK] Frontend Connected")
+    global thread
+    with thread_lock:
+        if thread is None:
+            print("[INFO] Starting background sensor stream task...")
+            thread = socketio.start_background_task(
+                background_sensor_stream
+            )
 
 # ---------------------------
 # Required Columns
@@ -69,24 +92,25 @@ REQUIRED_COLUMNS = [
 # LIVE SENSOR STREAMING
 # ============================================
 def background_sensor_stream():
-
     index = 0
+    df = None
+    try:
+        print("[INFO] Loading neonate_data1.csv for sensor stream...")
+        df = pd.read_csv(
+            "neonate_data1.csv",
+            encoding="ISO-8859-1"
+        )
+        df.columns = [
+            col.replace('–', '-')
+            for col in df.columns
+        ]
+        print(f"[OK] Loaded {len(df)} rows for sensor stream.")
+    except Exception as e:
+        print("[ERROR] Error loading neonate_data1.csv for stream:", e)
 
     while True:
-
         try:
-
-            df = pd.read_csv(
-                "neonate_data1.csv",
-                encoding="ISO-8859-1"
-            )
-
-            df.columns = [
-                col.replace('–', '-')
-                for col in df.columns
-            ]
-
-            if len(df) == 0:
+            if df is None or len(df) == 0:
                 socketio.sleep(1)
                 continue
 
@@ -95,7 +119,7 @@ def background_sensor_stream():
 
             row = df.iloc[index].to_dict()
 
-            print(f"📡 Streaming row {index}")
+            print(f"[INFO] Streaming row {index}")
 
             # ============================
             # ML PREDICTION
@@ -144,7 +168,7 @@ def background_sensor_stream():
             socketio.sleep(1)
 
         except Exception as e:
-            print("❌ Stream Error:", e)
+            print("[ERROR] Stream Error:", e)
             socketio.sleep(2)
 
 
@@ -246,14 +270,65 @@ def home():
 # ---------------------------
 # CREATE TABLES + START
 # ---------------------------
-if __name__ == "__main__":
-
+print("[INFO] Initializing database tables...")
+try:
     with app.app_context():
         db.create_all()
-        print("✅ Database tables created")
+        # Seed default users if empty
+        if not User.query.first():
+            print("[INFO] Database is empty. Seeding default users...")
+            import json
+            import bcrypt
+            
+            users_file = os.path.join(os.path.dirname(__file__), "users.json")
+            if os.path.exists(users_file):
+                with open(users_file, "r") as f:
+                    users_data = json.load(f)
+                
+                for username, info in users_data.items():
+                    password = info.get("password")
+                    hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+                    
+                    user = User(
+                        username=username,
+                        password=hashed,
+                        role="parent",
+                        infant_id=username
+                    )
+                    db.session.add(user)
+                
+                # Also add a default nurse and doctor for testing convenience
+                nurse_hashed = bcrypt.hashpw("nurse123".encode(), bcrypt.gensalt()).decode()
+                nurse_user = User(
+                    username="nurse",
+                    password=nurse_hashed,
+                    role="nurse",
+                    ward="Ward A"
+                )
+                db.session.add(nurse_user)
 
-    thread = socketio.start_background_task(
-        background_sensor_stream
+                doctor_hashed = bcrypt.hashpw("doctor123".encode(), bcrypt.gensalt()).decode()
+                doctor_user = User(
+                    username="doctor",
+                    password=doctor_hashed,
+                    role="doctor",
+                    ward="Ward A"
+                )
+                db.session.add(doctor_user)
+                
+                db.session.commit()
+                print("[OK] Default users seeded successfully.")
+            else:
+                print("[WARN] users.json not found, skipping seeding.")
+    print("[OK] Database tables checked/created.")
+except Exception as e:
+    print(f"[WARN] Database initialization failed (possibly database is unreachable): {e}")
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    print(f"[INFO] Starting development server on port {port}...")
+    socketio.run(
+        app,
+        host="0.0.0.0",
+        port=port
     )
-
-    socketio.run(app, debug=True)
