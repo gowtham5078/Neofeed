@@ -1,16 +1,19 @@
+
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { loginUser } from '../api';
 
 function Login() {
-  const [userId,   setUserId]   = useState('');
+  const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
-  const [error,    setError]    = useState('');
-  const [loading,  setLoading]  = useState(false);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
   const handleLogin = async () => {
+    if (loading) return;
+
     setError('');
     setLoading(true);
 
@@ -18,12 +21,10 @@ function Login() {
       const data = await loginUser(userId, password);
 
       if (data.success) {
-        // All users land on NavigationPage first
         navigate('/home');
       } else {
         setError(data.message || 'Login failed.');
       }
-
     } catch (err) {
       if (err.response?.data?.message) {
         setError(err.response.data.message);
@@ -36,7 +37,9 @@ function Login() {
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter') handleLogin();
+    if (e.key === 'Enter') {
+      handleLogin();
+    }
   };
 
   return (
@@ -45,7 +48,7 @@ function Login() {
 
       <input
         type="text"
-        placeholder="Username / Neonate ID"
+        placeholder="Username"
         value={userId}
         onChange={(e) => setUserId(e.target.value)}
         onKeyDown={handleKeyDown}
@@ -66,6 +69,10 @@ function Login() {
       </button>
 
       {error && <p className="error">{error}</p>}
+
+      <p>
+        Don't have an account? <Link to="/register">Register here</Link>
+      </p>
     </div>
   );
 }
